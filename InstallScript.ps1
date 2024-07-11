@@ -1,12 +1,13 @@
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
-$installers = Get-ChildItem "D:\Installers" -Filter "*.exe"
+#Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+Set-Location D:
+$installers = Get-ChildItem ".\Installers" -Filter "*.exe"
 foreach ($inst in $installers) {
     Write-Host "----------------------------------------------"
     Write-Host "Installing $inst "
     Start-Process -FilePath $inst.FullName -Wait
 }
 
-$installers = Get-ChildItem "D:\Installers" -Filter "*.msi"
+$installers = Get-ChildItem ".\Installers" -Filter "*.msi"
 foreach ($inst in $installers) {
     Write-Host "----------------------------------------------"
     Write-Host "Installing $inst "
