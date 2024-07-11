@@ -28,14 +28,14 @@ Write-Host "----------------------------------------------"
 Write-Host "Getting Windows Updates"
 Write-Host "----------------------------------------------"
 try
-(
+{
     Get-WUlist -MicrosoftUpdate
-)
+}
 catch
-(
+{
     Reset-WUComponents -Verbose
     Get-WUlist -MicrosoftUpdate
-)
+}
 Write-Host "----------------------------------------------"
 Write-Host "Installing Windows Updates"
 Write-Host "----------------------------------------------"
