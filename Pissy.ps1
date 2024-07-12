@@ -1,6 +1,9 @@
-Start-Process -Verb RunAs powershell.exe
-#Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+#Prerequisites Check
+#Requires -RunAsAdministrator
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 Set-Location D:
+
+#Getting all exe's installed
 $installers = Get-ChildItem ".\Installers" -Filter "*.exe"
 foreach ($inst in $installers) {
     Write-Host "----------------------------------------------"
@@ -8,44 +11,41 @@ foreach ($inst in $installers) {
     Start-Process -FilePath $inst.FullName -Wait
 }
 
+#Getting all msi's installed
 $installers = Get-ChildItem ".\Installers" -Filter "*.msi"
 foreach ($inst in $installers) {
     Write-Host "----------------------------------------------"
     Write-Host "Installing $inst "
-    Write-Host "----------------------------------------------"
     Start-Process -FilePath $inst.FullName -Wait
 }
 
+#Getting windows updates
 Write-Host "----------------------------------------------"
 Write-Host "Installing NuGet module"
-Write-Host "----------------------------------------------"
-Install-PackageProvider -Name NuGet -Force
+Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
 Write-Host "----------------------------------------------"
 Write-Host "Installing Windows Updater module "
-Write-Host "----------------------------------------------"
-Install-Module -Name PSWindowsUpdate -Force
+Install-Module -Name PSWindowsUpdate -Force -Scope CurrentUser
 Write-Host "----------------------------------------------"
 Write-Host "Getting Windows Updates"
-Write-Host "----------------------------------------------"
 try
 {
     Get-WUlist -MicrosoftUpdate
 }
 catch
 {
+    Write-Host "----------------------------------------------"
+    Write-Host "FAILED getting Windows Updates. Trying Again"
     Reset-WUComponents -Verbose
     Get-WUlist -MicrosoftUpdate
 }
 Write-Host "----------------------------------------------"
 Write-Host "Installing Windows Updates"
-Write-Host "----------------------------------------------"
 Install-WindowsUpdate -MicrosoftUpdate -AcceptAll
 Write-Host "----------------------------------------------"
-Write-Host "Unstalling Windows Updater module"
-Write-Host "----------------------------------------------"
-uninstall-Module -Name PSWindowsUpdate -Force
-Write-Host "----------------------------------------------"
 Write-Host "Unstalling NuGet module"
-Write-Host "----------------------------------------------"
 (Get-PackageProvider NuGet).ProviderPath | Remove-Item -force
-Restart-Computer -Force
+Write-Host "----------------------------------------------"
+Write-Host "Unstalling Windows Updater module"
+uninstall-Module -Name PSWindowsUpdate -Force
+#Restart-Computer -Force
